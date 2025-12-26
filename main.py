@@ -74,14 +74,22 @@ def main(page: ft.Page):
     y_input = ft.TextField(label="Y 좌표", value="1000", width=100, bgcolor="#21262d", border_color="#30363d")
 
     def page_resize(e):
-        # On Windows with pyautogui, show the Monitor Resolution
-        if HAS_PYAUTOGUI:
-            w, h = pyautogui.size()
-            res_text.value = f"모니터 해상도: {w} x {h} (현재 창: {int(page.width)}x{int(page.height)})"
-        else:
-            # On Mobile, page.width/height IS the screen size (logical)
-            res_text.value = f"현재 화면(창) 크기: {int(page.width)} x {int(page.height)}"
-        page.update()
+        try:
+            # On Windows with pyautogui, show the Monitor Resolution
+            if HAS_PYAUTOGUI:
+                w, h = pyautogui.size()
+                current_w = int(page.width) if page.width else 0
+                current_h = int(page.height) if page.height else 0
+                res_text.value = f"모니터 해상도: {w} x {h} (현재 창: {current_w}x{current_h})"
+            else:
+                # On Mobile, page.width/height IS the screen size (logical)
+                # Handle None/0 safely
+                current_w = int(page.width) if page.width else 0
+                current_h = int(page.height) if page.height else 0
+                res_text.value = f"현재 화면(창) 크기: {current_w} x {current_h}"
+            page.update()
+        except Exception as e:
+            print(f"Resize Error: {e}")
 
     page.on_resized = page_resize 
 
