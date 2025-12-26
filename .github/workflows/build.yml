@@ -25,10 +25,15 @@ jobs:
           pip install flet
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Build APK with Flet
-        uses: flet-dev/flet-action@v0.1.0
+      # Manually setup Flutter (more reliable than flet-action)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-            command: build apk --project-dir . --verbose
+          channel: 'stable'
+
+      - name: Build APK with Flet
+        # Note: --project-dir . is default, but specifying it to be safe
+        run: flet build apk --verbose
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v3
